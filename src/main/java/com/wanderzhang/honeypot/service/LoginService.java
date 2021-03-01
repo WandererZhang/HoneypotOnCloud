@@ -1,21 +1,15 @@
 package com.wanderzhang.honeypot.service;
 
-import com.wanderzhang.honeypot.threadpool.ScheduledExecutor;
-import org.springframework.stereotype.Service;
-
 /**
+ * 登录服务
+ *
  * @author 78445
  */
-@Service
-public class LoginService implements LoginServiceImpl{
-
-    @Override
-    public void startScheduledExecutor() {
-        ScheduledExecutor.start();
-    }
-
-    @Override
-    public void endScheduledExecutor() {
-        ScheduledExecutor.end();
-    }
+public interface LoginService {
+    /**
+     * 开启K8S监听任务
+     *
+     * @author 78445
+     */
+    void startQueryThreadPool();
 }

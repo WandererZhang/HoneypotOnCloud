@@ -1,6 +1,6 @@
 package com.wanderzhang.honeypot.controller;
 
-import com.wanderzhang.honeypot.service.LoginService;
+import com.wanderzhang.honeypot.service.LoginServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class LoginController {
     final
-    LoginService loginService;
+    LoginServiceImpl loginServiceImpl;
 
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
+    public LoginController(LoginServiceImpl loginServiceImpl) {
+        this.loginServiceImpl = loginServiceImpl;
     }
 
     @PostMapping("/user/login")
@@ -29,7 +29,7 @@ public class LoginController {
         UsernamePasswordToken token = new UsernamePasswordToken(userName, password);
         try {
             subject.login(token);
-            loginService.startScheduledExecutor();
+            loginServiceImpl.startQueryThreadPool();
             return "/index";
         } catch (UnknownAccountException e) {
             model.addAttribute("msg", "用户名不存在");
@@ -43,7 +43,6 @@ public class LoginController {
     public String logout(Model model) {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
-        loginService.endScheduledExecutor();
         model.addAttribute("msg", "登出成功");
         return "/login";
     }

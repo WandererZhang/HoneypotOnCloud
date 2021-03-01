@@ -1,8 +1,7 @@
 package com.wanderzhang.honeypot.controller;
 
 import com.wanderzhang.honeypot.pojo.Message;
-import com.wanderzhang.honeypot.pojo.MessageMap;
-import com.wanderzhang.honeypot.pojo.MessageQueue;
+import com.wanderzhang.honeypot.service.LogAndStatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -19,17 +18,24 @@ import java.util.List;
 public class LogController {
     private static final Logger logger = LoggerFactory.getLogger(LogController.class);
 
+    final
+    LogAndStatusService logAndStatusService;
+
+    public LogController(LogAndStatusService logAndStatusService) {
+        this.logAndStatusService = logAndStatusService;
+    }
+
     @ResponseBody
     @RequestMapping("/log/ajax")
-    public List<Message> updateMessage() {
+    public List<Message> showRealTimeMessage() {
         logger.info("Send message by ajax");
-        return MessageQueue.getInstance().getMessage();
+        return logAndStatusService.queryRealTimeMessage();
     }
 
     @RequestMapping("/history")
-    public String showHistory(Model model) {
+    public String showHistoryMessage(Model model) {
         logger.info("Send messageMap");
-        model.addAttribute("messageMap", MessageMap.getInstance().getMessage());
+        model.addAttribute("messageMap", logAndStatusService.queryHistoryMessage());
         return "/history";
     }
 }
