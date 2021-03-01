@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: honeypot-web
+  name: honeypot-web
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      k8s-app: honeypot-web
+  template:
+    metadata:
+      labels:
+        k8s-app: honeypot-web
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      hostNetwork: true
+      containers:
+        - name: honeypot-web
+          image: honeypot-web:v1.0.0
+          imagePullPolicy: IfNotPresent
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      restartPolicy: Always

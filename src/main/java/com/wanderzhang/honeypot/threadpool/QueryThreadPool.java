@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.*;
 
 /**
- * 轮询K8S中的蜜罐信息
- *
  * @author 78445
  */
 public class QueryThreadPool {

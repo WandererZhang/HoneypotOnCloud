@@ -30,13 +30,13 @@ public class LoginController {
         try {
             subject.login(token);
             loginServiceImpl.startQueryThreadPool();
-            return "/index";
+            return "index";
         } catch (UnknownAccountException e) {
             model.addAttribute("msg", "用户名不存在");
         } catch (IncorrectCredentialsException e) {
             model.addAttribute("msg", "密码错误");
         }
-        return "/login";
+        return "login";
     }
 
     @RequestMapping("/user/logout")
@@ -44,6 +44,6 @@ public class LoginController {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
         model.addAttribute("msg", "登出成功");
-        return "/login";
+        return "login";
     }
 }

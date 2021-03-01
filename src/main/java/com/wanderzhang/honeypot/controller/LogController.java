@@ -36,6 +36,6 @@ public class LogController {
     public String showHistoryMessage(Model model) {
         logger.info("Send messageMap");
         model.addAttribute("messageMap", logAndStatusService.queryHistoryMessage());
-        return "/history";
+        return "history";
     }
 }
