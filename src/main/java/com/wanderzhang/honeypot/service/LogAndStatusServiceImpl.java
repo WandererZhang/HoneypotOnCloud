@@ -58,7 +58,7 @@ public class LogAndStatusServiceImpl implements LogAndStatusService {
     @Override
     @Async("asyncThreadExecutor")
     public void updateMessage() {
-        Config config = new ConfigBuilder().withMasterUrl("http://124.70.197.208:8080").build();
+        Config config = new ConfigBuilder().withMasterUrl("http://localhost:8080").build();
         KubernetesClient client = new DefaultKubernetesClient(config);
         CustomResourceDefinitionContext context = new CustomResourceDefinitionContext.Builder()
                 .withGroup("devices.kubeedge.io")
