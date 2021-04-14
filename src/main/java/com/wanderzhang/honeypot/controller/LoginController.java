@@ -1,49 +1,55 @@
 package com.wanderzhang.honeypot.controller;
 
-import com.wanderzhang.honeypot.service.LoginServiceImpl;
+import cn.hutool.core.lang.Assert;
+import com.wanderzhang.honeypot.pojo.Result;
+import com.wanderzhang.honeypot.pojo.User;
+import com.wanderzhang.honeypot.service.LogAndStatusService;
+import com.wanderzhang.honeypot.utils.JwtUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 需配置username和password
+ *
  * @author 78445
  */
-@Controller
+@RestController
+@RequestMapping("/user")
 public class LoginController {
+    private static final Long USERID = 2017211210L;
+    private static final String USERNAME = "XXXXXX";
+    private static final String PASSWORD = "XXXXXX";
+
     final
-    LoginServiceImpl loginServiceImpl;
+    LogAndStatusService logAndStatusService;
+    final
+    JwtUtils jwtUtils;
 
-    public LoginController(LoginServiceImpl loginServiceImpl) {
-        this.loginServiceImpl = loginServiceImpl;
+    public LoginController(JwtUtils jwtUtils, LogAndStatusService logAndStatusService) {
+        this.jwtUtils = jwtUtils;
+        this.logAndStatusService = logAndStatusService;
     }
 
-    @PostMapping("/user/login")
-    public String login(String userName, String password, Model model) {
-        Subject subject = SecurityUtils.getSubject();
-        UsernamePasswordToken token = new UsernamePasswordToken(userName, password);
-        try {
-            subject.login(token);
-            loginServiceImpl.startQueryThreadPool();
-            return "index";
-        } catch (UnknownAccountException e) {
-            model.addAttribute("msg", "用户名不存在");
-        } catch (IncorrectCredentialsException e) {
-            model.addAttribute("msg", "密码错误");
-        }
-        return "login";
+    @PostMapping("/login")
+    public Result login(@Validated @RequestBody User user, HttpServletResponse response) {
+        Assert.isTrue(user.getUsername().equals(USERNAME), "用户不存在");
+        Assert.isTrue(user.getPassword().equals(PASSWORD), "账号或密码错误");
+        String jwt = jwtUtils.generateToken(USERID);
+        response.setHeader("Authorization", jwt);
+        response.setHeader("Access-control-Expose-Headers", "Authorization");
+        logAndStatusService.updateMessage();
+        return Result.ok("登陆成功", user.getUsername());
     }
 
-    @RequestMapping("/user/logout")
-    public String logout(Model model) {
-        Subject subject = SecurityUtils.getSubject();
-        subject.logout();
-        model.addAttribute("msg", "登出成功");
-        return "login";
+    @GetMapping("/logout")
+    @RequiresAuthentication
+    public Result logout() {
+        SecurityUtils.getSubject().logout();
+        return Result.ok("登出成功");
     }
+
 }

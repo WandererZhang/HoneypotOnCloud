@@ -1,8 +1,6 @@
 package com.wanderzhang.honeypot.pojo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Objects;
 
@@ -15,10 +13,11 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Message {
-    private String resourceVersion;
+    private String version;
     private String address;
     private String method;
     private String date;
+    private String location;
 
     @Override
     public boolean equals(Object o) {

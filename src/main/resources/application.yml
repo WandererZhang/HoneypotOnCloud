@@ -1,0 +1,6 @@
+server:
+  port: 8081
+jwt:
+  secret: 87ffd44101404820035fef21aee23589
+  expire: 604800
+  header: Authorization

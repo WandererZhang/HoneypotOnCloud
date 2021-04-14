@@ -5,5 +5,5 @@ RUN mkdir -p /usr
 RUN mkdir -p /usr/local
 COPY . /usr/local/
 WORKDIR /usr/local
-EXPOSE 8089
+EXPOSE 8081
 ENTRYPOINT ["java","-jar","honeypot-v1.0.0.jar"]

@@ -1,20 +1,19 @@
 package com.wanderzhang.honeypot.controller;
 
 import com.wanderzhang.honeypot.pojo.Message;
+import com.wanderzhang.honeypot.pojo.Result;
 import com.wanderzhang.honeypot.service.LogAndStatusService;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.List;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author 78445
  */
-@Controller
+@RestController
+@RequestMapping("/log")
 public class LogController {
     private static final Logger logger = LoggerFactory.getLogger(LogController.class);
 
@@ -25,17 +24,26 @@ public class LogController {
         this.logAndStatusService = logAndStatusService;
     }
 
-    @ResponseBody
-    @RequestMapping("/log/ajax")
-    public List<Message> showRealTimeMessage() {
-        logger.info("Send message by ajax");
-        return logAndStatusService.queryRealTimeMessage();
+    @GetMapping("/history")
+    @RequiresAuthentication
+    public Result showHistoryMessage() {
+        logger.info("Send messageMap");
+        return Result.ok("history", logAndStatusService.queryHistoryMessage());
     }
 
-    @RequestMapping("/history")
-    public String showHistoryMessage(Model model) {
-        logger.info("Send messageMap");
-        model.addAttribute("messageMap", logAndStatusService.queryHistoryMessage());
-        return "history";
+    @GetMapping("/location")
+    @RequiresAuthentication
+    public Result getLocation() {
+        logger.info("Send locationMap");
+        return Result.ok("location", logAndStatusService.queryLocation());
+    }
+
+    @PostMapping("/delete")
+    @RequiresAuthentication
+    public Result deleteMessage(@Validated @RequestBody Message message) {
+        if (logAndStatusService.deleteMessage(message)) {
+            return Result.create(233, "message", message);
+        }
+        return Result.error("删除失败!");
     }
 }
